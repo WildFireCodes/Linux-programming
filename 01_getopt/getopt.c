@@ -29,7 +29,7 @@ int main(int argc,char* argv[])
                 //%lu
                 break;
             case '?':
-                //fprintf(stderr,"\033[0;31m Unknown option -%c \n",optopt);
+                fprintf(stderr,"\033[0;31m Unknown option -%c \n",optopt);
                 break;
         }
     }
