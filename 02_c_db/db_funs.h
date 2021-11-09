@@ -13,6 +13,9 @@ int OpenRecord(int32_t key){
 }
 
 //writerecord
+//closerecord
+//getrecord
+//delete record
 
 
 #endif

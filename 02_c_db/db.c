@@ -9,6 +9,10 @@ int main(int argc, char* argv[]){
     int opt;
     while((opt=getopt(argc,argv,"rw:d::")) != -1){
         switch(opt){
+            case 'r':
+            break;
+            case 'w':
+            break;
             case 'd':
             break;
         }
