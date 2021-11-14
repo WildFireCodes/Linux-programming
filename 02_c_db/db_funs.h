@@ -1,11 +1,13 @@
 #ifndef _DBFUNS_H
 #define _DBFUNS_H
 #define RECORD_LENGTH 30
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <stdio.h>
 
 typedef struct record{
     int32_t key;
@@ -119,32 +121,37 @@ int read_args(int argc, char* argv[], record *instance){
 
     return mode;
 }
-
+ 
 //Wymaga file descriptor'a (int) zwracany przez funkcje open, klucza - ID rekordu
 //dopoki start nie pokrywa sie z koncem mozemy czytac
 //lseek przesuwa dla deskryptora pliku fd na wartosc podana jako 2 argument, 3 to dyrektywa
 int read_record(int fd, int32_t key){
-    int start = lseek(fd, 0, SEEK_SET); //przusiniecie to offset bajtow
-    int end = lseek(fd, 0, SEEK_END); //przesuniecie to rozmiar pliku+offset bajtow - koniec
+    //int start = lseek(fd, 0, SEEK_SET); //przusiniecie to offset bajtow
+    //int end = lseek(fd, 0, SEEK_END); //przesuniecie to rozmiar pliku+offset bajtow - koniec
 
-    char current_line[RECORD_LENGTH]={};
-    while(start != end){
-        //current_line = getline()
-        if(key == 1){
-            //wyswietl rekord
-            //inaczej error
+    char current_line[RECORD_LENGTH], *token, *next_token, *end;
+    int r;
+
+    while((r = read(fd, current_line, sizeof(current_line)))){
+        token = strtok_s(current_line, &r, " ", &next_token);
+    
+        if(key == (int32_t)strtol(token, &end, 10)){
+            printf("%s \n", current_line);
+            return 1;
         }
+        //start += RECORD_LENGTH;
     }
+    fprintf(stderr, "Record not found. \n");
     return -1;
 }
 
-void write(){
+/*void write(){
 
 }
 
 void delete(){
-    
-}
+
+}*/
 
 
 #endif
