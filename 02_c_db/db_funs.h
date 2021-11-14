@@ -1,9 +1,11 @@
 #ifndef _DBFUNS_H
 #define _DBFUNS_H
-
+#define RECORD_LENGTH 30
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 typedef struct record{
     int32_t key;
@@ -14,59 +16,70 @@ typedef struct record{
 enum mode_vals{READ=1, WRITE=2, DELETE=3};
 
 int check_setmode(int setmode, int default_value){
-    return setmode == -1 ? default_value : -1;
+    return setmode == 0 ? default_value : -1;
 }
 
 int validate_args(int mode, int skey, int sinfo, int sval){
     int validation = 1;
 
     switch(mode){
+        case 0:
+        fprintf(stderr, "No args passed. Try again.\n");
+        break; 
+
         case(1):
         if(skey){
-            printf("sinfo sval: %d %d\n",sinfo,sval);
             if(sinfo || sval){
                 fprintf(stderr, "The read method takes only the key as an argument. Try again.\n"); 
                 validation = -1;
             }
         }
+
+        else{
+            fprintf(stderr, "No key arg passed! Try again.\n");
+            validation = -1;
+        }
+
         break;
 
         case(2):
         if(skey){
-            if(!sinfo || !sval ){
-                fprintf(stderr, "The write method takes only the key as an argument. It also requires the info parameter or value. Try again.\n"); 
+            if(!sinfo && !sval){
+                fprintf(stderr, "Info/Value arg required. Try again.\n"); 
                 validation = -1;
             }
         }
+
+        else{
+            fprintf(stderr, "No key arg passed! Try again.\n");
+            validation = -1;
+        }
+
         break;
 
         case(3):
         if(!skey){
             fprintf(stderr, "The delete method requires the key as an argument. Try again.\n"); 
-            validation=-1;
+            validation = -1;
         }
         break;
 
         default:
-        fprintf(stderr, "Unmatched case\n");
-        validation = -1;
+            fprintf(stderr, "Unmatched case! Wrong args passed. Try again.\n");
+            validation = -1;
     }
 
-    printf("Validation before return %d\n",validation);
     return validation;
 }
 
-int read_args(int argc, char* argv[]){
-    int opt, mode = -1, setmode = -1, setkey = -1, setinfo = -1, setvalue = -1;
-    int32_t key = -1;
-    float val = 0;
-    char info[16]={}, *end; 
-
+int read_args(int argc, char* argv[], record *instance){
+    int opt, mode = 0, setmode = 0, setkey = 0, setinfo = 0, setvalue = 0; //default value = 0
+    char *end; 
+    
     while((opt = getopt(argc, argv, "rwdk:i::v::")) != -1){
         switch(opt){
             case 'r':
             mode = check_setmode(setmode, READ);
-            printf("Read %d\n",mode);
             setmode = mode;
             break;
 
@@ -81,18 +94,17 @@ int read_args(int argc, char* argv[]){
             break;
 
             case 'k':
-            //key = (int32_t)atoi(optarg);
-            key = (int32_t)strtol(optarg, &end, 10);
+            instance->key = (int32_t)strtol(optarg, &end, 10);
             setkey = 1;
             break;
 
             case 'i':
-            strncpy(info, optarg, 16);
+            strncpy(instance->info, optarg, 16);
             setinfo = 1;
             break;
 
             case 'v':
-            val = strtof(optarg, NULL);
+            instance->val = strtof(optarg, NULL);
             setvalue = 1;
             break;
 
@@ -108,8 +120,31 @@ int read_args(int argc, char* argv[]){
     return mode;
 }
 
+//Wymaga file descriptor'a (int) zwracany przez funkcje open, klucza - ID rekordu
+//dopoki start nie pokrywa sie z koncem mozemy czytac
+//lseek przesuwa dla deskryptora pliku fd na wartosc podana jako 2 argument, 3 to dyrektywa
+int read_record(int fd, int32_t key){
+    int start = lseek(fd, 0, SEEK_SET); //przusiniecie to offset bajtow
+    int end = lseek(fd, 0, SEEK_END); //przesuniecie to rozmiar pliku+offset bajtow - koniec
 
+    char current_line[RECORD_LENGTH]={};
+    while(start != end){
+        //current_line = getline()
+        if(key == 1){
+            //wyswietl rekord
+            //inaczej error
+        }
+    }
+    return -1;
+}
 
+void write(){
+
+}
+
+void delete(){
+    
+}
 
 
 #endif

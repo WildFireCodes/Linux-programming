@@ -6,10 +6,10 @@
 int main(int argc, char* argv[]){
     int mode=0; 
     // 1 - read, 2 - write, 3 - delete, -1 - error
+    record db={0};
+    mode=read_args(argc, argv, &db);
 
-    mode=read_args(argc, argv);
-
-    printf("%d \n",mode);
+    //printf("%d \n",mode);
 
     return 0;
 }
