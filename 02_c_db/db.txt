@@ -1,2 +1,1 @@
-int32 char(16) double
-1 xdxdxd 1.0
+1000 plain text 1.0
