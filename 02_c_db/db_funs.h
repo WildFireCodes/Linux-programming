@@ -137,6 +137,7 @@ int read_args(int argc, char* argv[], record *instance){
 }
 
 int find_record(int fd, int32_t key){
+    lseek(fd, 0, SEEK_SET);
     char current_line[RECORD_LENGTH], *token, *next_token, *end;
 
     while((read(fd, current_line, RECORD_LENGTH))){
@@ -179,11 +180,12 @@ int write_record(int fd, int32_t key, char *info, float value){
     
     int check_empty = find_record(fd, key);
 
-    if(check_empty >= 0){
+    if(check_empty >= 0)
         lseek(fd, check_empty, SEEK_SET);
-        printf("xdxd\n");       
-    }
-        
+
+    else if((check_empty = find_record(fd, -1)) >= 0)
+        lseek(fd, check_empty, SEEK_SET);
+    
     else
         lseek(fd, 0, SEEK_END);
 
