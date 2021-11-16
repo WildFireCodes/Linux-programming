@@ -1,6 +1,6 @@
 #ifndef _DBFUNS_H
 #define _DBFUNS_H
-#define RECORD_LENGTH 42
+#define RECORD_LENGTH 38
 #define _GNU_SOURCE
 #include <stdlib.h>
 #include <unistd.h>
@@ -106,7 +106,10 @@ int read_args(int argc, char* argv[], record *instance){
                 fprintf(stderr,"optarg is null \n");
                 return -1;
             }
-            strncpy(instance->info, optarg, 16);
+            
+            if(strncpy(instance->info, optarg, 16) <0 )
+                return -1;
+
             setinfo = 1;
             break;
 
@@ -148,12 +151,15 @@ return -1;
  
 int read_record(int fd, int32_t key){
    int check = find_record(fd, key);
-   
+
    if(check >= 0){
        char current_line[RECORD_LENGTH];
        lseek(fd, check, SEEK_SET);
-       read(fd, current_line, RECORD_LENGTH);
-       printf("%s \n", current_line);
+       
+       if(read(fd, current_line, RECORD_LENGTH) <0 )
+        return -1;
+
+       printf("%s", current_line);
        return 1;
    }
 
@@ -173,22 +179,29 @@ int write_record(int fd, int32_t key, char *info, float value){
     
     int check_empty = find_record(fd, key);
 
-    if(check_empty >= 0)
+    if(check_empty >= 0){
         lseek(fd, check_empty, SEEK_SET);
+        printf("xdxd\n");       
+    }
+        
     else
         lseek(fd, 0, SEEK_END);
 
     record new;
     new.key=key; 
-    strcpy(new.info, info); 
+
+    if(strcpy(new.info, info) < 0)
+        return -1;
+
     new.val=value;
 
-    char new_line[RECORD_LENGTH], *line_format = "%-7d  %-16s  %-10.6lf\n";
+    char new_line[RECORD_LENGTH+1], *line_format = "%-7d  %-16s  %-10.6lf\n";
     
-    snprintf(new_line, RECORD_LENGTH, line_format, new.key, new.info, new.val);
-    printf("%s",new_line);
-    printf("%s",new_line);
-    write(fd, new_line, strlen(new_line));
+    if(snprintf(new_line, RECORD_LENGTH+1, line_format, new.key, new.info, new.val) < 0)
+        return -1;
+    
+    if(write(fd, new_line, strlen(new_line)) <0 )
+        return -1;
 
     return 1;
 }
@@ -200,20 +213,24 @@ int delete_record(int fd, int32_t key){
         return -1;
 
     int find = find_record(fd, key);
+    
     if(find >= 0){
         lseek(fd, find, SEEK_SET);
         char* line_format = "%-7d";
         char new_line[8];
-        snprintf(new_line, sizeof(new_line), line_format, -1);
-        write(fd, new_line, sizeof(new_line));
+
+        if(snprintf(new_line, sizeof(new_line), line_format, -1) <0 )
+            return -1;
+
+        if(write(fd, new_line, strlen(new_line)) <0 )
+            return -1; //sizeof bierze tez nulla
+
         return 1;
     }
 
 
     fprintf(stderr, "Couldn't find record to delete. \n");
     return -1;
-    
 }
-
 
 #endif

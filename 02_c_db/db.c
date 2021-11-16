@@ -11,23 +11,38 @@ int main(int argc, char* argv[]){
     switch(mode){
         case(READ):
         fd = open("db.txt", O_RDONLY);
+
+        if(fd <0 )
+            return -1;
+
         res = read_record(fd, db.key);
+
         if(!res)
             return -1;
 
         break;
 
         case(WRITE):
-        fd = open("db.txt", O_RDWR | O_APPEND | O_CREAT, S_IRWXU);
+        fd = open("db.txt", O_RDWR | O_CREAT, S_IRWXU);
+
+        if(fd <0 )
+            return -1;
+
         res = write_record(fd, db.key, db.info, db.val);
+
         if(!res)
             return -1;
 
         break;
 
         case(DELETE):
-        fd = open("db.txt", O_RDWR);
-        res = delete_record(fd, db.val);
+        fd = open("db.txt", O_RDWR, S_IRWXU);
+
+        if(fd <0 )
+            return -1;
+
+        res = delete_record(fd, db.key);
+
         if(!res)
             return -1;
 
@@ -38,6 +53,7 @@ int main(int argc, char* argv[]){
     }
 
     res = close(fd);
+    
     if(res < 0){
         fprintf(stderr, "Error while closing file! \n");
         return -1;
