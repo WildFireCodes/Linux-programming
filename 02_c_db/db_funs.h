@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <math.h>
 
-typedef struct record{
+typedef struct __attribute__((__packed__)) record{
     int32_t key;
     char info[16];
     float val;
@@ -120,7 +120,7 @@ int read_args(int argc, char* argv[], record *instance){
                 return -1;
             }
 
-            instance->val = strtof(optarg, NULL);
+            instance->val = strtof(optarg, NULL); //strtol bylby lepszy
             setvalue = 1;
             break;
 
@@ -236,3 +236,5 @@ int delete_record(int fd, int32_t key){
 }
 
 #endif
+
+//%hhx - polowa z inta polowa

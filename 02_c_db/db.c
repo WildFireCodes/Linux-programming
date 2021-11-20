@@ -10,7 +10,7 @@ int main(int argc, char* argv[]){
 
     switch(mode){
         case(READ):
-        fd = open("db.txt", O_RDONLY);
+        fd = open(argv[argc-1], O_RDONLY);
 
         if(fd <0 )
             return -1;
@@ -23,7 +23,7 @@ int main(int argc, char* argv[]){
         break;
 
         case(WRITE):
-        fd = open("db.txt", O_RDWR | O_CREAT, S_IRWXU);
+        fd = open(argv[argc-1], O_RDWR | O_CREAT, S_IRWXU);
 
         if(fd <0 )
             return -1;
@@ -36,7 +36,7 @@ int main(int argc, char* argv[]){
         break;
 
         case(DELETE):
-        fd = open("db.txt", O_RDWR, S_IRWXU);
+        fd = open(argv[argc-1], O_RDWR, S_IRWXU);
 
         if(fd <0 )
             return -1;
