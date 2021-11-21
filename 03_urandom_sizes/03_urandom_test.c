@@ -24,12 +24,11 @@ int main(){
     printf("\n");
     unsigned short *s = T;
 
-    for(int i=0; i<LENGTH; i++){
+    for(int i=0; i<LENGTH; i+=2){
 
-        printf(" %hu", *s);
-        s+=(sizeof(T[i])/sizeof(char));
+        printf(" %hu", *(s+i));
 
-        if((i+1)%8 == 0)
+        if( (i+2)%8 == 0)
             printf("\n");
     }
 
@@ -46,7 +45,7 @@ int main(){
         double v;
     }test;
 
-    struct __attribute__((__packed__)) test2 {
+    struct __attribute__((__packed__)) test2{
         short key;
         char t[16];
         double v;
