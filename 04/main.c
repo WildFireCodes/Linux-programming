@@ -22,7 +22,7 @@ int find_max(int argc, char* argv[]){
         
         i++;    
     }
-    printf("MAX: %d\n", max);
+    //printf("MAX: %d\n", max);
     return max;
 }
 
@@ -39,32 +39,27 @@ record* read_text_field(int id, char* argv[], int max, record* ptr){
 }
 
 int find_last_id(int fd, record* ptr){
-    int last_id;
+    int last_id, end = lseek(fd, 0, SEEK_END);
     lseek(fd, 0, SEEK_SET);
-    while(lseek(fd, 0, SEEK_CUR) < lseek(fd, 0, SEEK_END)){
+    
+    while(lseek(fd, 0, SEEK_CUR) < end - 1){
         read(fd, ptr, 2);
-        ptr->id = last_id;
-        printf("odczytane id to: %d poz %ld \n", ptr->id, lseek(fd, 0, SEEK_CUR));
+        last_id = ptr->id;
+        //printf("odczytane id to: %d poz %ld \n", last_id, lseek(fd, 0, SEEK_CUR));
         read(fd, ptr, 1);
-        read(fd, ptr, ptr->len+1);
+        lseek(fd, ptr->len+1, SEEK_CUR);
     }
-    printf("Ostatnie ID to %d\n", last_id);
+    //printf("Ostatnie ID to %d\n", last_id);
     return last_id;
 }
 
 void write_to_db(int fd, int argc, int max, char* argv[], record* ptr){
-    static int id;
-
-    if(lseek(fd, 0, SEEK_END) == 0){
-        ptr->id = 0;
-        id = 0;
-    }
-    else{
-        int idid = find_last_id(fd, ptr);
-    }
-
     for(int i=2; i<argc; i++){
-        ptr->id = id++;
+        if(lseek(fd, 0, SEEK_END) == 0)
+            ptr->id = 0;
+        else
+            ptr->id = find_last_id(fd, ptr) + 1;
+
         read_text_field(i, argv, max, ptr);
         write(fd, ptr, sizeof(record)+max);
         write(fd, "\n", 1);
