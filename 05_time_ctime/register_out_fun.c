@@ -5,14 +5,28 @@
 #include <unistd.h>
 #include <string.h>
 
+#define NANO 500000000L
+
 int fd;
 
 void function_output(){
+    struct timespec tim;
+    tim.tv_sec = 0;
+    tim.tv_nsec = NANO;
+
     time_t sys_time;
     time(&sys_time);
-    printf("HEREE");
+
+    nanosleep(&tim, NULL);
     if(write(fd, ctime(&sys_time), strlen(ctime(&sys_time))) < 0){
         perror("Error while writting to file.\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void close_file(){
+    if( close(fd) <0 ){
+        perror("Error while closing file.\n");
         exit(EXIT_FAILURE);
     }
 }
@@ -25,7 +39,6 @@ int main(int argc, char* argv[]){
         perror("Error while opening file.\n");
         exit(EXIT_FAILURE);
     }
-    
 
     int loop_count, val;
     if(argc < 3)
@@ -33,23 +46,13 @@ int main(int argc, char* argv[]){
     else
         loop_count = atoi(argv[2]);
 
-    //function_output();
+    atexit(close_file);
     for(int i=0; i < loop_count; i++){
        
-        val = atexit(function_output);;
-        if(val != 0){
-            perror("atexit() function registration Failed\n");
-            exit(EXIT_FAILURE);
-        }
-
-    }
-
-
-
-
-    if( close(fd) <0 ){
-        perror("Error while closing file! \n");
-        exit(EXIT_FAILURE);
+        //nanosleep(&tim, NULL);
+        val = atexit(function_output);
+        if(val != 0)
+            perror("atexit() function registration failed\n");       
     }
 
     exit(0);
