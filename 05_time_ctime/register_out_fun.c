@@ -52,7 +52,7 @@ int main(int argc, char* argv[]){
         //nanosleep(&tim, NULL);
         val = atexit(function_output);
         if(val != 0)
-            perror("atexit() function registration failed\n");       
+            perror("atexit() function registration failed\n");     
     }
 
     exit(0);
