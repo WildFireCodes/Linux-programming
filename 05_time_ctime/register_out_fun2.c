@@ -67,7 +67,7 @@ int main(int argc, char** argv){
 
     if(file_exists(argv[1])){
         perror("File already exists.\n");
-        //exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
     fd = open(argv[1], O_CREAT | O_RDWR);

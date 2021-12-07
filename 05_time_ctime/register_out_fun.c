@@ -48,8 +48,6 @@ int main(int argc, char* argv[]){
 
     atexit(close_file);
     for(int i=0; i < loop_count; i++){
-       
-        //nanosleep(&tim, NULL);
         val = atexit(function_output);
         if(val != 0)
             perror("atexit() function registration failed\n");     
