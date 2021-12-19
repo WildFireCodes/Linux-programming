@@ -22,7 +22,7 @@ int main(int argc, char** argv){
     else if (f == 0){
     printf(", jestem potomkiem");
     nanosleep(&tim, NULL);
-    printf(" %d, %d ", getppid());
+    printf(" %d", getppid());
     nanosleep(&tim, NULL);
     }
 
