@@ -18,7 +18,21 @@ int main(int argc, char** argv){
     
     if(f < 0)
         exit(EXIT_FAILURE);
-    else if ()
+    
+    else if (f == 0){
+    printf(", jestem potomkiem");
+    nanosleep(&tim, NULL);
+    printf(" %d, %d ", getppid());
+    nanosleep(&tim, NULL);
+    }
+
+    else {
+    printf(", jestem rodzicem");
+    nanosleep(&tim, NULL);
+    printf(" %d ", getpid());
+    nanosleep(&tim, NULL);
+    printf(" procesu pid=%d \n", f);
+    }
 
     exit(0);
 }
