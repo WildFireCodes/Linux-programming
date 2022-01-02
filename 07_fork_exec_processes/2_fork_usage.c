@@ -22,17 +22,19 @@ int main(int argc, char** argv){
     else if (f == 0){
     printf(", jestem potomkiem");
     nanosleep(&tim, NULL);
-    printf(" %d", getppid());
+    printf(" %d\n", getpid());
     nanosleep(&tim, NULL);
     }
 
     else {
     printf(", jestem rodzicem");
     nanosleep(&tim, NULL);
-    printf(" %d ", getpid());
+    printf(" %d ", getppid());
     nanosleep(&tim, NULL);
     printf(" procesu pid=%d \n", f);
     }
+
+    //dlaczego Witaj pojawia sie dwa razy?
 
     exit(0);
 }
