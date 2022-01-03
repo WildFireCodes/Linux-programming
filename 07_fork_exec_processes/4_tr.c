@@ -5,29 +5,34 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-typedef enum { F, T } boolean;
-
 int main(int argc, char** argv){
     if(argc < 2){
         perror("No args passed! Try again. \n");
         exit(EXIT_FAILURE);
     }
 
-    int opt, fd, fd2, i = 1;
-    boolean param = F;
-
-    while((opt = getopt(argc, argv, "i::o::c::d::s::t::")) != -1){
+    int opt;
+    while((opt = getopt(argc, argv, "i:o:")) != -1){
             switch(opt){
                 case 'i':
-                fd = open(optarg, O_RDONLY);
+                //printf("%s to optarg\n", optarg);
+                int fd = open(optarg, O_RDONLY);
+                if(fd < 0){
+                    perror("Error while opening input file. \n");
+                    exit(EXIT_FAILURE);
+                }
+
                 dup2(fd, 0); //input stream from file
-                param = T;
                 break;
 
                 case 'o':
-                fd2 = open(optarg, O_WRONLY | O_CREAT | O_TRUNC);
+                int fd2 = open(optarg, O_WRONLY | O_CREAT | O_TRUNC);
+                if(fd2 < 0){
+                    perror("Error while opening output file. \n");
+                    exit(EXIT_FAILURE);
+                }
+                
                 dup2(fd2, 1); //output stream to file
-                param = T;
                 break;
 
                 default:
@@ -36,20 +41,21 @@ int main(int argc, char** argv){
              }
         }
 
-    char** tab = (char**)malloc(argc*sizeof(char*));
+    char** tab = (char**)malloc((argc-optind+2) * sizeof(char*));
     if(!tab){
         perror("Error while allocating memory. \n");
         exit(EXIT_FAILURE);
     }
 
-    if(param == T)
-        i = 3;
+    //pierwszy indeks przy wywolaniu musi zawierac nazwe programu
+    //ostatni musi byc NULLem
+    tab[0] = "tr";
+    tab[argc-1] = NULL;
 
-    int index = 1;
-    for(i; i<argc; i++, index++)
-        tab[index] = argv[i];
+    for(int i=1; optind < argc; i++, optind++)
+        tab[i] = argv[optind];
 
     execvp("tr", tab);
-    free(tab);
+
     exit(0);
 }
